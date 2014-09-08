@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+
+<!-- 
+   ===============================================================
+       Alfresco MarkLogic Channel Publishing Plugin build script
+       Copyright &copy; 2013-2014. Abhinav Kumar Mishra. 
+       All rights reserved.
+       Developed by Abhinav K Mishra 
+   ===============================================================
+-->
+<project name="Alfresco MarkLogic Channel Publishing Plugin Build Project" default="build-alfresco-amp" basedir=".">
+	<property name="ref.lib" value="${basedir}\build-lib"/>
+    <property name="project.dir" value="${basedir}"/>
+    <property name="build.dir" value="${project.dir}/appbuild"/>
+	
+    <property name="alf.jar.file" value="${build.dir}/lib/marklogic-alfresco5.x-integration.jar"/>
+    <property name="share.jar.file" value="${build.dir}/lib/marklogic-alfresco-share5.x-integration.jar"/>
+    <property name="alf.amp.file" value="${build.dir}/amp/marklogic-alfresco5.x-integration.amp"/>
+    <property name="share.amp.file" value="${build.dir}/amp/marklogic-alfresco-share5.x-integration.amp"/>
+
+	<property name="alfresco.war.file" value="C:/Alfresco/tomcat/webapps/alfresco.war"/>
+	<property name="share.war.file" value="C:/Alfresco/tomcat/webapps/share.war"/>
+
+    <target name="-clean">
+        <delete dir="${build.dir}/amp"/>
+        <delete dir="${build.dir}/lib" />
+        <delete dir="${build.dir}/classes"/>
+    </target>
+                       
+    <target name="-init" depends="-clean">
+        <mkdir dir="${build.dir}/amp" />
+        <mkdir dir="${build.dir}/lib" />
+        <mkdir dir="${build.dir}/classes" />
+    </target>
+               
+    <path id="class.path">
+        <dirset dir="${build.dir}" />
+        <fileset dir="${basedir}/lib" includes="**/*.jar"/>
+        <fileset dir="${ref.lib}" includes="**/*.jar"/>
+    </path>
+
+    <target name="-compile" depends="-init">
+       <javac debug="true" classpathref="class.path" srcdir="${project.dir}/src" 
+       		destdir="${build.dir}/classes" includeantruntime="true"/>
+    </target>
+                       
+    <target name="alfresco-jar" depends="-compile" description="Package the Module in jar file." >
+        <mkdir dir="${build.dir}/classes/META-INF" />
+        <jar destfile="${alf.jar.file}">
+           <fileset dir="${build.dir}/classes" includes="**/*.class, META-INF/*.*" />
+        </jar>
+    </target>
+	
+	<target name="share-jar" depends="-compile" description="Package the Module in jar file." >
+        <mkdir dir="${build.dir}/classes/META-INF" />
+    	<copy todir="${build.dir}/classes/META-INF" 
+    		file="${basedir}/config/share/alfresco/web-extension/share-config-custom.xml"/>
+        <jar destfile="${share.jar.file}">
+           <!-- Packaging the share-config-custom.xml file to jar file and deploy to share -->
+	       <fileset dir="${build.dir}/classes" includes="META-INF/*.*" />
+    	</jar>
+	</target>
+               
+    <target name="build-alfresco-amp" depends="alfresco-jar" description="Package the Module in amp file." >
+        <zip destfile="${alf.amp.file}" >
+           <fileset dir="${build.dir}" includes="lib/*.jar" />
+           <fileset dir="${project.dir}" includes="config/**/*.*" excludes="**/module.properties config/share/**" />
+           <fileset dir="${project.dir}/config/alfresco/module/marklogic-integration" includes="module.properties" />
+           <fileset dir="${project.dir}" includes="lib/*.jar"/>
+        </zip>
+    </target>
+	
+	 <target name="build-share-amp" depends="share-jar" description="Package the Module in amp file." >    	
+    	<zip destfile="${share.amp.file}" >
+            <fileset dir="${project.dir}/config/alfresco/module/marklogic-integration" includes="module.properties" />
+            <fileset dir="${build.dir}" includes="lib/*marklogic-alfresco-share5.x-integration.jar" />
+    	</zip>
+	</target>
+	
+	<target name="deploy-alfresco-war" depends="build-alfresco-amp" description="Deploy the war file to tomcat webapps" >
+        <echo>Installing amps into alfresco.war files..</echo>
+		<java dir="." fork="true"
+	        classname="org.alfresco.repo.module.tool.ModuleManagementTool">
+	        <classpath refid="class.path"/>
+	        <arg line="install ${build.dir}/amp/ ${alfresco.war.file}
+	                -directory -force"/>
+		</java>
+		
+		<java dir="." fork="true"
+	        classname="org.alfresco.repo.module.tool.ModuleManagementTool">
+	        <classpath refid="class.path"/>
+	        <arg line="list ${alfresco.war.file}"/>
+		</java>			
+		<echo>Alfresco deployment has been completed..</echo>
+	</target>
+	
+	<target name="deploy-share-war" depends="build-share-amp" description="Deploy the war file to tomcat webapps" >
+        <echo>Installing amps into share.war files..</echo>
+		<java dir="." fork="true"
+	        classname="org.alfresco.repo.module.tool.ModuleManagementTool">
+	        <classpath refid="class.path"/>
+	        <arg line="install ${build.dir}/amp/ ${share.war.file}
+	                -directory -force"/>
+		</java>
+		<java dir="." fork="true"
+	        classname="org.alfresco.repo.module.tool.ModuleManagementTool">
+	        <classpath refid="class.path"/>
+	        <arg line="list ${share.war.file}"/>
+		 </java>
+		<echo>Share deployment has been completed..</echo>
+   </target>
+	
+	<target name="deploy-all" description="Deploy alfesco and share war files to tomcat webapps">
+		<ant antfile="build.xml" description="Deploy alfesco war files to tomcat webapps"
+		     target="deploy-alfresco-war"/>
+		<ant antfile="build.xml" description="Deploy share war files to tomcat webapps"
+		     target="deploy-share-war"/>
+	</target>
+</project>

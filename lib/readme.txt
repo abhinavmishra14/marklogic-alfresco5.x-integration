@@ -1,0 +1,1 @@
+Additional jar files (which are not available in alfresco) which needs to be deployed to alfresco will be placed in 'lib' directory.
