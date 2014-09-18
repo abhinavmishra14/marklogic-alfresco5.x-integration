@@ -8,3 +8,8 @@ jug-*       http://www.apache.org/licenses/
 
 ===Eclipse Public License===
 truezip-*	https://truezip.dev.java.net/ 
+
+
+======Alfresco SDK==========
+
+alfresco-*   http://wiki.alfresco.com/wiki/Alfresco_SDK_4.0
