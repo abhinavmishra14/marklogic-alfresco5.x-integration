@@ -162,11 +162,9 @@ public class MarkLogicChannelType extends AbstractChannelType {
             File contentFile;
             boolean deleteContentFileOnCompletion = false;
             if (FileContentReader.class.isAssignableFrom(reader.getClass())) {
-                // Grab the content straight from the content store if we can
                 contentFile = ((FileContentReader) reader).getFile();
             }
             else {
-                // Otherwise copy it to a temp file and use the copy
                 final File tempDir = TempFileProvider.getLongLifeTempDir("marklogic");
                 contentFile = TempFileProvider.createTempFile("marklogic", "", tempDir);
                 reader.getContent(contentFile);

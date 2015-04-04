@@ -14,16 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>classes</name>
-			<type>2</type>
-			<location>C:/Alfresco/tomcat/shared/classes</location>
-		</link>
-		<link>
-			<name>shared</name>
-			<type>2</type>
-			<location>C:/Alfresco/tomcat/shared</location>
-		</link>
-	</linkedResources>
 </projectDescription>
