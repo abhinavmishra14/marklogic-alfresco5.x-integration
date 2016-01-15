@@ -1,9 +1,9 @@
-marklogic-alfresco5.x-integration
+Integrating MarkLogic and Alfresco 5
 =================================
 
-MarkLogic and Alfresco Version 5.x Integration plug-in. It will be used to publish contents to marklogic from alfresco via publishing channel.
+This plug-in will be used to publish contents to marklogic from alfresco via publishing channel.
 
-To support the Alfresco 5.x, this plugin is upgraded.
+Note that 5.0.a community version onwards Alfresco has remove the 'Channel Manager' based publishing interface. Hence this plug-in will not support Alfresco version later than 5.0.a.
 
 Visit following site for more info: www.javaworld-abhinav.blogspot.in/2014/07/alfresco-and-marklogic-integration.html
 
